@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="登录页面">
+    <meta name="author" content="Q1mi">
+    <link rel="stylesheet" href="/static/plugins/font-awesome-4.6.1/css/font-awesome.min.css" />
+
+    <title>{% block title %}{% endblock %}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/styles/bootstrap.css" rel="stylesheet" />
+
+    <!-- Custom styles for this template -->
+    <link href="/static/styles/common.css" rel="stylesheet" />
+    <link href="/static/styles/login.css" rel="stylesheet" />
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="/static/scripts/html5shiv.js"></script>
+    <script src="/static/scripts/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <div class="page-header header">
+        <h2>宇宙超级无敌BBS</h2>
+    </div>
+    <div class="container">
+        {% block login_signup_form %}{% endblock %}
+    </div> <!-- /container -->
+    <div class="footer">
+        <div class="container">
+            Copyright©2016  <a href="http://www.liwenzhou.com">Q1mi</a> 版权所有
+        </div>
+    </div>
+    <script src="/static/scripts/jquery-2.2.3.js"></script>
+    <script src="/static/scripts/bootstrap.min.js"></script>
+    <script src="/static/scripts/extends.js"></script>
+    <script src="/static/scripts/login_signup.js"></script>
+</body>
+</html>

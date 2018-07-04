@@ -1,0 +1,415 @@
+{% extends "bbs/master/base.html" %}
+
+{% block extend-css %}
+    <link href="/static/styles/webchat/webchat.css" rel="stylesheet">
+{% endblock %}
+
+{% block container %}
+    <div class="chat-container">
+        <!-- start left panel-->
+        <div class="chat-panel col-md-3">
+            <div class="panel-header">
+                <h3 class="panel-title">{{ request.user.userprofile.name }}</h3>
+            </div>
+            <div class="search-bar input-group">
+                <span class="input-group-addon"><i class="fa fa-search fa-fw"></i></span>
+                <input class="form-control" type="text" placeholder="搜索">
+            </div>
+            <div class="">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs nav-justified" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#friend-tab" role="tab" data-toggle="tab">好友
+                            <span class="badge my-badge hide">0</span>
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#group-tab" role="tab" data-toggle="tab">群组
+                            <span class="badge my-badge hide">0</span>
+                        </a>
+                    </li>
+                </ul>
+                <!-- end Nav tabs -->
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="friend-tab">
+                        <ul class="list-group">
+                        {% for friend in request.user.userprofile.friends.select_related %}
+                            <li contact-type="single" contact-id="{{ friend.id }}" class="list-group-item" onclick="OpenChatWindow(this)">
+                            <i class='fa fa-circle offline'></i>
+                            <img class="hd-img" src="{{ friend.get_head_img }}">
+                                <span class="badge my-badge hide">0</span>
+                                <span class="contact-name">{{ friend.name }}</span>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="group-tab">
+                        <ul class="list-group">
+                            {% for group in request.user.userprofile.group_members.select_related %}
+                            <li contact-type="group" contact-id="{{ group.id }}" class="list-group-item" onclick="OpenChatWindow(this)">
+{#                            <img class="hd-img" src="{{ group.get_head_img }}">#}
+                                <span class="badge my-badge hide">0</span>
+                                <span class="contact-name">{{ group.name }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <!-- end Tab panes -->
+            </div>
+          </div>
+        <!-- end left panel-->
+        <!-- start right box-->
+        <div class="col-md-9 chat">
+            <div class="chat-box">
+                <div class="box-hd">
+                    <div class="box-hd-wrapper"></div>
+                </div>
+                <div class="box-bd">
+                    <div class="box-bd-notify">
+                        <p id="no-msg-notify" class="hide">暂时没有新消息</p>
+                        <p id="no-chat-notify">未选择聊天</p>
+                    </div>
+                </div>
+                <div class="box-ft hide">
+                    <div class="box-toolbar">
+                        <div class="content">
+                            <a href="#"><span class="fa fa-smile-o fa-2x"></span></a>
+                            <a href="#"><span class="fa fa-scissors fa-2x"></span></a>
+                            <!-- Button trigger modal -->
+                            <a type="button" data-toggle="modal" data-target="#myModal" style="cursor: pointer">
+                                <span class="fa fa-folder-o fa-2x"></span>
+                                <input id="select-file" name="file" style="display: none" multiple="multiple" type="file"/>
+                            </a>
+                            <!-- Modal -->
+                            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                              <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">上传文件</h4>
+                                  </div>
+                                    <form enctype="multipart/form-data" method="post" id="upload-form">
+                                      <div class="modal-body">
+                                        <input type="file" name="file" />
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                        <button type="button" class="btn btn-primary" onclick="return UploadFile();">上传</button>
+                                      </div>
+                                    </form>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <textarea id="msg"></textarea>
+                    </div>
+                    <div class="content">
+                        <button id="send msg" class="btn btn-default pull-right">发送消息</button>
+                    </div>
+                </div>
+            </div>
+        <div class="clearfix"></div>
+        </div>
+        <!-- end right box-->
+    </div>
+{% endblock %}
+
+{% block extend-js %}
+<script>
+    //for csrf
+    // using jQuery
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie("csrftoken");
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }  //end csrf
+
+    $(document).ready(function() {
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });  //end set csrf
+
+        //delegate function to 'enter' keydown
+        $("body").delegate("textarea", "keydown",function(e){
+            if(e.which == 13) {//Enter key down
+                //send msg button clicked
+                var msg_text = $("textarea").val();
+                if ($.trim(msg_text).length > 0){
+                    console.log(msg_text);
+                    SendMSG(msg_text);
+                    //no wait the send_msg's call confirm msg
+                    AddSendMSGIntoBox(msg_text);
+                    $("textarea").val('');
+                }
+                e.returnValue = false; //回车不换行
+                return false;
+            }
+        });
+        // 收消息
+        GetNewMsgs();
+        GetFriendStatus();
+
+        //更新好友在线状态
+        var get_friends_status = setInterval(function(){
+            console.log("----run interval----");
+            var res = GetFriendStatus();
+            if (res== 'success') {
+                console.log("update success");
+            }
+        }, 300000);  //300秒
+
+    });  // end document ready
+    // start function SendMSG
+    function SendMSG(msg_text){
+        var contact_type = $(".box-hd-wrapper").attr("contact-type");
+        var contact_id = $(".box-hd-wrapper").attr("contact-id");
+        console.log("begin send msg...");
+        console.log(contact_id, contact_type);
+        if (contact_type && contact_id) {
+            console.log(contact_id, contact_type);
+            var msg_obj = {
+                "from": "{{ request.user.userprofile.id }}",
+                "to": contact_id,
+                "type": contact_type,
+                "msg": msg_text
+            };
+            console.log(msg_obj);
+            $.post(
+                "{% url "webchat:send_msg" %}",
+                {data: JSON.stringify(msg_obj)},
+                function (callback) {
+                    console.log(callback);
+                }
+            );  // end post
+        }  // end if
+
+    }  // end function SendMSG
+
+    // start function AddMSGIntoBox
+    function AddSendMSGIntoBox(msg_text) {
+        var new_msg_ele = "<div class='clearfix'>" +
+            "<div class='msg-me'>" +
+                "<img class='hd-img' src='{{ request.user.userprofile.get_head_img }}'>" +
+                "<div class='msg-wrapper'>" +
+                    "<div class='msg-item'>" +
+                        "<span>" + "{{ request.user.userprofile.name }}" + "</span>" +
+                        "<span class='margin-left-five'>"  + new Date().toLocaleTimeString() +"</span>" +
+                        "<div class='msg-text'>" + msg_text +"</div>" +
+                    "</div>" +
+                "</div>" +
+            "</div>" +
+        "</div>";
+        $(".box-bd").append(new_msg_ele);
+        $(".box-bd").animate({scrollTop: $(".box-bd")[0].scrollHeight}, 500);  // 窗口滚动到最下
+    }  // end function AddSendMSGIntoBox
+
+    // start AddGetMSGIntoBox
+    function AddGetMSGIntoBox(msg_list) {
+        var msg_html = "";
+        $.each(msg_list, function(index, msg_obj) {
+            console.log(msg_obj);
+            var current_id = $(".box-hd-wrapper").attr("contact-id");
+            var current_type = $(".box-hd-wrapper").attr("contact-type");
+            var the_list_ele = $("li[contact-type='" + msg_obj.type + "'][contact-id='" + msg_obj.from + "']")[0];
+            var new_msg_ele = "<div class='clearfix'>"+
+                "<div class='msg-you'>" +
+                    "<img class='hd-img' src='" + msg_obj.hd_img + "'>" +
+                    "<div class='msg-wrapper'>" +
+                        "<div class='msg-item'>" +
+                            "<span>" + msg_obj.nickname + "</span>" +
+                            "<span class='margin-left-five'>" + msg_obj.timestamp +"</span>" +
+                            "<div class='msg-text'>" + msg_obj.msg +"</div>" +
+                        "</div>" +
+                    "</div>" +
+                "</div>" +
+            "</div>";
+            if (msg_obj.from == current_id && msg_obj.type == current_type) {  // 如果当前正在聊的人就是这条信息的发送者
+                msg_html += new_msg_ele;
+                $(".box-bd").append(msg_html);  //把收到的消息加到聊天窗口
+                $(".box-bd").animate({scrollTop: $(".box-bd")[0].scrollHeight}, 500);  // 窗口滚动到最下
+            } else if(the_list_ele) {  //当前聊的不是这个发消息的人就把消息加到好友列表元素的data中
+                if ($(the_list_ele).children("span:first").hasClass("hide")){  //让未读消息数显示出来
+                    $(the_list_ele).children("span:first").removeClass("hide");
+                }
+                $(the_list_ele).children("span:first").text(parseInt($(the_list_ele).children("span:first").text()) + 1);  //消息数+1
+                if (!the_list_ele.data) {  //data未定义就初始化
+                    the_list_ele.data = "";  //初始化
+                }
+                the_list_ele.data += new_msg_ele;  //把消息数据存储到对应好友的html元素中
+            } else {  //好友列表找不到这个发消息的人
+                console.log("Can't find the sender...");
+                return true; //如果好友列表中不存在这个发消息的人就跳过这次循环
+            }// end if
+        });  // end each
+    }
+    // end AddGetMSGIntoBox
+
+    // start function OpenChatWindow
+    function OpenChatWindow(ele){
+        var prev_contact_id = $(".box-hd .box-hd-wrapper").attr("contact-id");  //获取当前聊天人的属性
+        var prev_contact_type = $(".box-hd .box-hd-wrapper").attr("contact-type");
+        var contact_id = $(ele).attr("contact-id");
+        var contact_name = $(ele).find(".contact-name").text();
+        var contact_type = $(ele).attr("contact-type");
+        console.log(prev_contact_id, prev_contact_type);
+        console.log(contact_name, contact_type);
+        if (contact_id == prev_contact_id && contact_type == prev_contact_type) {
+        }else {  //点击的好友不是当前聊天对象时执行
+            console.log("点击的好友不是当前聊天对象时执行...");
+            if (prev_contact_id && prev_contact_type) {  //如果当前聊天框有旧消息
+                console.log("如果当前聊天框有旧消息...");
+                var prev_list_ele = $("li[contact-type='" + prev_contact_type + "'][contact-id='" + prev_contact_id + "']")[0];
+                console.log(prev_list_ele);
+                prev_list_ele.data = "";  //初始化当前聊天联系人元素的data
+                prev_list_ele.data += $(".box-bd").html();  //保存当前的聊天信息
+                $(".box-bd").html("");  //清空聊天窗口
+                console.log(prev_list_ele.data);
+            }
+            if (!$(ele).children("span:first").hasClass("hide")) {
+                $(ele).children("span:first").addClass("hide");  //隐藏未读消息数的标签
+            }
+            $(ele).children("span:first").text(0);  //将未读消息数置为0
+            GetTotalMSGNum();
+
+            $(ele).addClass("my-active");
+            $(ele).siblings().removeClass("my-active");
+
+            if ($(".box-ft").hasClass("hide")) {
+                $(".box-ft").removeClass("hide");  //显示输入框
+            }
+            if (!$("#no-chat-notify").hasClass("hide")) {
+                $("#no-chat-notify").addClass("hide");  //隐藏聊天窗口的提示信息
+            }
+            var box_hd_content = "正在跟" + contact_name + "聊天";
+            console.log(box_hd_content);
+            $(".box-hd .box-hd-wrapper").html(box_hd_content).attr("contact-id", contact_id).attr("contact-type", contact_type);
+
+            if (ele.data) {  //如果该元素的data中有消息
+                console.log("begin to load msgs...");
+                $(".box-bd").html(ele.data);  //加载保存在当前元素data中的数据
+                ele.data = "";  //加载完就清空该元素的data
+            }
+        }
+    }  // end function OpenChatWindow
+
+    // start function GetNewMsgs
+    function GetNewMsgs() {
+        console.log("getting new msgs...");
+        $.getJSON("{% url 'webchat:get_new_msgs' %}", function(callback) {
+            console.log(callback);
+            AddGetMSGIntoBox(callback); //加载后台传来的消息数据
+            GetFriendStatus();  //获取好友在线状态
+            GetTotalMSGNum();  //计算未读消息总数
+            GetNewMsgs();  //继续获取新消息
+        });  // end getJSON
+    }  // end function GetNewMsgs
+
+    function getSum(array){
+        var result = 0;
+        for (var i=0;i<array.length;i++) {
+            result += parseInt(array[i]);
+        }
+        return result
+    }  //end getSum
+
+    // get total msg num
+    function GetTotalMSGNum() {
+        console.log("get total unread msg num...");
+        var tab_menu = $("li[role='presentation'] span");  //得到tab面版上的徽章标签
+        $.each(tab_menu, function(index, tab){
+            var list_id = $(tab).parent().attr("href");  //得到tab对应的list id
+            var num_array = $(list_id).find(".badge").map(function() {return parseInt($(this).text())});
+            var result = getSum(num_array);  //得到未读消息的和
+            if (result > 0){
+                if ($(tab).hasClass("hide")) {
+                    $(tab).removeClass("hide");
+                }
+                if (result > 99){
+                    $(tab).text("99+");
+                } else {
+                    $(tab).text(result);
+                }
+            } else {
+                if (!$(tab).hasClass("hide")) {
+                    $(tab).addClass("hide");
+                }
+                $(tab).text(0);
+            }
+        });  //end each
+    }
+
+    // 获取好友的在线状态
+    function GetFriendStatus() {
+        console.log("getting my friends online-status...");
+        $.getJSON(
+                "{% url 'webchat:check_my_friends_status' %}",
+                function(callback){
+                    console.log(callback);
+
+                    $("#friend-tab").find("li").each(function() {  //遍历我的好友列表
+                        var current_id = parseInt($(this).attr("contact-id"));  //这里一定要转成int类型！！！
+                        var status_ele = $(this).children("i");
+                        console.log(callback.includes(current_id));
+                        if (callback.includes(current_id)) {  //如果好友的id在后台传过来的在线数组里
+                            if (!$(status_ele).hasClass("online")) {
+                                $(status_ele).addClass("online");
+                                $(status_ele).removeClass("offline");
+                            }
+                        } else {  //不在线
+                            if ($(status_ele).hasClass("online")) {
+                                $(status_ele).removeClass("online");
+                                $(status_ele).addClass("offline");
+                            }
+                        }
+                    });  //end each
+                    console.log("flush friends online status success!");
+                    return "success";
+                }
+        );  //end getJSON
+    }  //end GetFriendStatus
+
+    //upload file
+    function UploadFile() {
+        var formData = new FormData($("form")[0]);
+        console.log(formData);
+
+        $.ajax({
+            url: '{% url "webchat:upload_file" %}',
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            enctype: 'multipart/form-data',
+            processData: false,
+            success: function (response) {
+                alert(response);
+            }
+        });
+    }
+
+</script>
+{% endblock %}

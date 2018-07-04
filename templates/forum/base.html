@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="基于bootstrap Off Canvas Template">
+    <meta name="author" content="Vincent">
+
+    <title>Python community</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/styles/bootstrap.css" rel="stylesheet">
+    <link href="/static/plugins/font-awesome-4.6.1/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/styles/offcanvas.css" rel="stylesheet">
+    <link href="/static/styles/common.css" rel="stylesheet">
+    {% block extend-css %}
+    {% endblock %}
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="/static/scripts/ie-emulation-modes-warning.js"></script>
+    <style type="text/css">:root #content > #right > .dose > .dosesingle,
+    :root #content > #center > .dose > .dosesingle {
+        display: none !important;
+    }</style>
+    <style type="text/css">
+    </style>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="/static/scripts/html5shiv.min.js"></script>
+      <script src="/static/scripts/respond.min.js"></script>
+    <![endif]-->
+    {% block head-js %}
+    {% endblock %}
+    <style id="style-1-cropbar-clipper">/* Copyright 2014 Evernote Corporation. All rights reserved. */
+    .en-markup-crop-options {
+        top: 18px !important;
+        left: 50% !important;
+        margin-left: -100px !important;
+        width: 200px !important;
+        border: 2px rgba(255, 255, 255, .38) solid !important;
+        border-radius: 4px !important;
+    }
+
+    .en-markup-crop-options div div:first-of-type {
+        margin-left: 0px !important;
+    }
+    </style>
+</head>
+
+<body>{% csrf_token %}
+<nav class="navbar navbar-fixed-top navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">能量社区</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            {% block top-menu %}
+                <ul class="nav navbar-nav">
+                    {% for t in topics %}
+                        {% if t.id == topic_obj.id %}
+                            <li class="active"><a href="{% url 'forum:topic_posts' t.id %}">{{ t.name }}</a></li>
+                        {% else %}
+                            <li class=""><a href="{% url 'forum:topic_posts' t.id %}">{{ t.name }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {#                {% url "webchat:chat_dashboard" as chat_url %}#}
+                    {#                {% if request.path == chat_url %}#}
+                    {#                    <li class="active"><a href="/webchat/">撩妹战区</a></li>#}
+                    {#                {% else %}#}
+                    {#                    <li class=""><a href="/webchat/">撩妹战区</a></li>#}
+                    {#                {% endif %}#}
+                </ul>
+            {% endblock %}
+            {#              <ul class="nav navbar-nav navbar-right">#}
+            {#                {% if request.user.is_authenticated %}#}
+            {#                    <li class=""><a href="#">{{ request.user.profile.name }}</a></li>#}
+            {#                    <li class=""><a href="{% url 'logout' %}">注销</a></li>#}
+            {#                {% else %}#}
+            {#                    <li class=""><a href="{% url 'login' %}">登录/注册</a></li>#}
+            {#                {% endif  %}#}
+            {#              </ul>#}
+        </div><!-- /.nav-collapse -->
+
+    </div><!-- /.container -->
+</nav><!-- /.navbar -->
+
+<div class="container">
+    {% block container %}
+
+        <div class="row row-offcanvas row-offcanvas-right">
+
+            <div class="col-xs-12 col-sm-9">
+                <p class="pull-right visible-xs">
+                    <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+                </p>
+                {% block nav-top-area %}
+                {% endblock %}
+                {% block jumbotron %}
+                {% endblock %}
+
+                {% block page-container %}
+                {% endblock %}<!--帖子列表-->
+            </div><!--/.col-xs-12.col-sm-9-->
+            {% block page-right %}
+            {% endblock %}
+        </div><!--/row-->
+
+        <hr>
+
+        <footer>
+            <p>Copyright©2018 <a href="http://blog.codecraftsman.cc">Vincent</a> 版权所有</p>
+        </footer>
+    {% endblock %}
+</div><!--/.container-->
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="/static/scripts/jquery-2.2.3.js"></script>
+<script src="/static/scripts/bootstrap.min.js"></script>
+{% block extend-js %}
+{% endblock %}
+
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="/static/scripts/ie10-viewport-bug-workaround.js"></script>
+<script src="/static/scripts/offcanvas.js"></script>
+
+
+</body>
+</html>

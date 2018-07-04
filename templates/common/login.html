@@ -1,0 +1,38 @@
+{% extends 'common/master/login_signup_master.html' %}
+{% load error_msg %}
+{% block title %}
+    登陆
+{% endblock %}
+
+{% block login_signup_form %}
+    <form id="input-form" class="form-signin" action="" method="post">
+    {% csrf_token %}
+        <h2 class="form-signin-heading">请登录</h2>
+        <div class="input-group">
+            <span class="input-group-addon"><i class="fa fa-user fa-fw" aria-hidden="true"></i></span>
+            <label for="{{ login_form_obj.username.auto_id }}" class="sr-only"></label>
+            {{ login_form_obj.username }}
+        </div>
+        {% for error in login_form_obj.username.errors %}
+            <div class="my-alert alert-danger" role="alert">{{ error }}</div>
+        {% endfor %}
+        <div class="input-group">
+            <span class="input-group-addon"><i class="fa fa-key fa-fw" aria-hidden="true"></i></span>
+            <label for="{{ login_form_obj.password.auto_id }}" class="sr-only"></label>
+            {{ login_form_obj.password }}
+        </div>
+        {% for error in login_form_obj.password.errors %}
+            <div class="my-alert alert-danger" role="alert">{{ error }}</div>
+        {% endfor %}
+        <div class="checkbox">
+            <label>
+                {{ login_form_obj.remember_me }} 记住我
+            </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block my-button" type="submit">登录</button>
+        <span class="error_msg">{{ login_error }}</span>
+        <div class="checkbox clearfix">
+            <a href="/signup/" class="a pull-left">还没注册？>></a>
+        </div>
+    </form>
+{% endblock %}

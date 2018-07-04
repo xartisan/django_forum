@@ -1,0 +1,38 @@
+* {
+    font-family: "微软雅黑", Arial, serif;
+}
+/*body {*/
+    /*background-color: #eee;*/
+/*}*/
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+  /* Set the fixed height of the footer here */
+    height: 50px;
+    border-top: solid 1px #337ab7;
+    padding: 10px 0 10px;
+}
+.error_msg {
+    color: red; !important;
+}
+caption {
+    margin-top: 10px;
+    background-color: #30a5ff;
+}
+.caption-a {
+    color: #FFFFFF;
+}
+.caption-a:hover {
+    color: #FFFFFF;
+}
+
+.my-option {
+    width: 20px;!important;
+}
+
+.my-toolbar {
+    margin-bottom: 10px;!important;
+}
+

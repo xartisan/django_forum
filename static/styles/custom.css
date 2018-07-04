@@ -1,0 +1,212 @@
+
+.footer{
+    position: absolute;
+    width: 100%;
+    margin-top: -60px;
+    bottom: 0;
+    height: 60px;
+    clear: both;
+    background-color: black;
+}
+
+.article-brief{
+    margin-left: -15px;
+}
+.article-title{
+    font-size: 20px;
+
+}
+a {
+    color: #333333;
+}
+a:visited{
+    text-decoration: none
+}
+a:hover{
+    color: #337AB7;
+    text-decoration: none;
+}
+body{
+    padding-bottom: 60px;
+    color: #333333;
+    font-family: Arial,"微软雅黑","Microsoft yahei","Hiragino Sans GB","冬青黑体简体中文 w3","Microsoft Yahei","Hiragino Sans GB","冬青黑体简体中文 w3",STXihei,"华文细黑",SimSun,"宋体",Heiti,"黑体",sans-serif;
+}
+.nav-top-area {
+    overflow: hidden;
+    clear: both;
+    margin-bottom: 10px;
+}
+
+
+.article-brief-text{
+    margin-top: 10px;
+    color: #999;
+}
+.article-title-bg{
+    font-size: 30px;
+}
+.article-title-brief{
+    margin-top: 10px;
+    color:#999;
+}
+
+.article-head-img{
+    margin-top: 25px;
+    margin-bottom: 20px;
+}
+.article-author {
+    position: relative;
+    color: #bbb;
+    font-size: 16px;
+    margin: 20px 0 27px;
+}
+
+.article-author span {
+    margin-right: 10px;
+}
+
+.article-content{
+    line-height: 30px;
+}
+.article-menu {
+    margin: 20px;
+    padding: 20px 0;
+}
+
+.comment-wrapper {
+    margin-top: 50px;
+}
+
+.comment-form-box-wrapper, .comment-box-wrapper {
+    border-top: 1px solid #f0f0f0;
+    margin-top: 50px;
+}
+.comment-form-box-wrapper span, .comment-box-wrapper span {
+    border-bottom: 4px solid #f63756;
+    color: #333;
+    font-size: 18px;
+    position: absolute;
+    z-index: 1;
+    height: 28px;
+    line-height: 20px;
+    margin: -28px 0 0;
+}
+.comment-form-box, .comment-box {
+    margin-top: 10px;
+}
+
+.btn-article {
+    width: 148px;
+    height: 48px;
+    line-height: 38px;
+    color: #fff;
+    background-color: #3ca5f6;
+    font-size: 18px;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+.btn-exceptional:hover {
+    background-color: #ec2b4b;
+    color: #fff;
+}
+
+.btn-thumb {
+    width: 148px;
+    height: 48px;
+    line-height: 38px;
+    border: 1px solid #eeeeee;
+    font-size: 18px;
+    border-radius: 4px;
+    margin-bottom: 30px;
+}
+
+.btn-thumb.active {
+    color: #fff;
+    background-color: #5cb85c;
+    border: none;
+}
+
+.btn-thumb:hover {
+    color: #fff;
+    background-color: #5cb85c;
+    border: none;
+}
+
+.btn-exceptional {
+    width: 148px;
+    height: 48px;
+    line-height: 36px;
+    background-color: #f63756;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 18px;
+}
+
+.btn-article:hover {
+    color: #fff;
+    background-color: #2f99ea;
+}
+
+.comment-head-img {
+    height: 40px;
+    width: 40px;
+}
+
+.margin-left-twenty {
+    margin-left: 20px;
+}
+
+.comment-bar a {
+
+}
+
+/*for webchat*/
+.chat-container {
+    width: 100%;
+    border: 1px dashed darkgray;
+    height: 100%;
+}
+
+.left-contact-panel {
+    width: 200px;
+    height: 635px;
+    border: 2px solid green;
+    float: left;
+}
+
+.right-chat-panel {
+    width: 640px;
+    height: 100%;
+    border: 2px solid greenyellow;
+    float: left;
+}
+
+.chat-box-title {
+    height: 30px;
+    border: 1px solid darkmagenta;
+}
+
+.chat-box-window {
+    height: 450px;
+    border: 1px solid black;
+}
+
+.chat-box-emoj {
+    height: 30px;
+    border: 1px solid brown;
+}
+
+.chat-box-msg-box{
+    height: 120px;
+    border: 1px solid deeppink;
+}
+
+.chat-box-msg-box textarea {
+    width: 85%;
+    height: 100%;
+}
+
+.chat-box-msg-box button {
+    margin-bottom: 30px;
+}

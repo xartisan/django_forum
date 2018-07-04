@@ -1,0 +1,141 @@
+{% extends "forum/base.html" %}
+{% load post_tags %}
+
+{% block extend-css %}
+    <link href="/static/styles/custom.css" rel="stylesheet">
+{% endblock %}
+
+{% block page-container %}
+    <div class="wrap-left">
+        <h1 thumb-num="{{ post.total_likes }}" id="article-title">
+            {{ post.title }}
+        </h1>
+        <div class="article-author">
+            <span>作者:{{ post.author.name }}</span>
+            <span>{{ post.publish | pretty_date }}</span>
+            <span>
+                <span class="fa fa-comment-o" aria-hidden="true"></span>
+                {{ post.comments.count }}
+            </span>
+        </div>
+        <div class="article-content">
+            <img class="img-responsive center-block" src="{{ post.post_image.url }}">
+            <div>
+                {{ post.body|safe }}
+            </div>
+        </div>
+        <div class="article-menu">
+            <div class="row">
+                {#                <a class="btn btn-exceptional" type="button">打赏</a>#}
+                <a class="post-like btn btn-thumb pull-right {% if request.user in post.users_like.all %}
+                active{% endif %}" type="button"
+                   data-id="{{ post.id }}" data-action="{% if request.user in post.users_like.all %}
+                un{% endif %}like">
+                    <span class="fa fa-thumbs-o-up fa-lg" aria-hidden="true"></span>
+                    <span class="likes-count">{{ post.total_likes }}</span>
+                </a>
+            </div>
+        </div>
+        <div class="tag-box"></div>
+        <div class="comment-wrapper">
+            <div class="comment-form-box-wrapper">
+                <span class="">发表评论</span>
+                <div class="comment-form-box">
+                    {% if request.user.is_authenticated %}
+                        <textarea class="form-control" rows="3" name="body"></textarea>
+                        <button class="btn btn-article">发表</button>
+                    {% else %}
+                        <div class="jumbotron">
+                            {#                          <h4 class="text-center"><a class="btn-link" href="{% url 'login' %}?next={{ request.path }}">登陆</a>后评论</h4>#}
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+            <div class="comment-box-wrapper">
+                <span class="">默认评论|最新评论</span>
+                <div class="comment-box">
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extend-js %}
+    <script src="/static/scripts/bbs/add_comment_bar.js"></script>
+    <script>
+        function getComments() {
+            $.get(
+                "{% url 'forum:comment_list' post.id %}",
+                //"/bbs/get_comments/1/",
+                function (callback) {
+                    $(".comment-box").html(callback);
+                    add_comment_bar();
+                }
+            ); //end get
+        }  //end function getComments
+
+        function getCsrf() {
+            return $("input[name='csrfmiddlewaretoken']").val();
+        }
+
+        $(document).ready(function () {
+            $(".comment-form-box button").click(function (e) {  // 给发表评论的按钮绑定事件
+                e.preventDefault();
+                var comment_body = $(".comment-form-box textarea").val().trim();  //获得评论内容
+                if (comment_body.length < 5) {
+                    alert("客官，五字起评，不议价。");
+                } else {
+                    //post
+                    console.log(getCsrf());
+                    $.post("{% url 'forum:comment_create' %}",
+                        {
+                            'post': "{{ post.id }}",
+                            'body': comment_body,
+                            'csrfmiddlewaretoken': getCsrf()
+                        },  // end post args
+                        (callback) => {
+                            if (callback == 'OK') {
+                                console.log("post comment success!");
+
+                                alert('评论成功！');
+                                $(".comment-form-box textarea").val('');  //获得评论内容
+                                getComments();
+                            }
+                        }
+                    );  // end post
+                }
+            });  //end submit comment button click
+            $(".post-like").click(function (e) {
+                console.log(e);
+                e.preventDefault();
+                $.post('{% url "forum:post_like" %}',
+                    {
+                        'id': $(this).data('id'),
+                        'action': $(this).data('action'),
+                        'csrfmiddlewaretoken': getCsrf(),
+                    }, function (data) {
+                        console.log(data);
+                        if (data['status'] === 'ok') {
+                            var prev_action = $(".post-like").data('action');
+                            console.log('re', prev_action);
+                            $(".post-like").data('action', prev_action == 'like' ? 'unlike' : 'like');
+                            var prev_likes = parseInt($(".likes-count").text());
+
+                            $(".likes-count").text(prev_action === "like" ? prev_likes + 1 : prev_likes - 1);
+
+                            if (prev_action == 'like') {
+                                $(".post-like").addClass('active');
+                            } else {
+                                $(".post-like").removeClass('active');
+                            }
+                        }
+                    })
+
+            });  //end thumb button click#}
+            getComments();
+        })
+        ; // end document ready
+    </script>
+{% endblock %}

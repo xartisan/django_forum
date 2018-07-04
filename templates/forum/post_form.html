@@ -1,0 +1,48 @@
+{% extends "forum/base.html" %}
+{% load post_tags %}
+
+{% block head-js %}
+    <script src="/static/plugins/ckeditor/ckeditor.js"></script>
+{% endblock %}
+
+{% block page-container %}
+    {% if new_article_obj %}
+        <h1>文章：{{ new_article_obj.title }}发布成功，<a href="{% url "bbs:post_detail" new_article_obj.id %}">点击查看</a></h1>
+    {% else %}
+        <form enctype="multipart/form-data" action="" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="title">文章标题</label>
+                <input name="title" type="text" class="form-control" placeholder="文章标题"/>
+            </div>
+            {#        <div class="form-group">#}
+            {#            <label for="brief">一句话简介</label>#}
+            {#            <input name="brief" type="text" class="form-control" placeholder="一句话简介" />#}
+            {#        </div>#}
+            <div class="form-group">
+                <label for="article_category">版块</label>
+                {{ form.topic }}
+                {#                <select class="form-control" name="topic">#}
+                {#                    {% for topic in topics %}#}
+                {#                        <option value="{{ topic.id }}">{{ topic.name }}</option>#}
+                {#                    {% endfor %}#}
+                {#                </select>#}
+            </div>
+
+            <textarea id="ckeditor" name="body" class="form-control" rows="3"></textarea>
+
+
+            <label for="head_img">文章图片
+                <input class="button" type="file" name="post_image"/>
+            </label>
+
+            <button type="submit" style="margin-top: 15px" class="btn btn-default pull-right">发布</button>
+        </form>
+    {% endif %}
+{% endblock %}
+
+{% block extend-js %}
+    <script>
+        CKEDITOR.replace("ckeditor");
+    </script>
+{% endblock %}
