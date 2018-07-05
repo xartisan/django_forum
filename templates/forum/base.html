@@ -55,6 +55,7 @@
 </head>
 
 <body>{% csrf_token %}
+<input type="hidden" name="authenticated" value="{{ request.user.is_authenticated }}">
 <nav class="navbar navbar-fixed-top navbar-default">
     <div class="container">
         <div class="navbar-header">

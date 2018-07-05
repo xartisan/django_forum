@@ -66,6 +66,45 @@
     <script src="/static/scripts/bbs/add_comment_bar.js"></script>
     <script>
         // 添加评论
+        let ff = () => {
+            console.log('ff.......');
+            $("#comment-form button").each(function () {  // 给发表评论的按钮绑定事件
+                console.log('ffff........');
+                console.log($(this));
+                $(this).click(function (e) {
+                    console.log('fdsafdsadfdsaf');
+                    e.preventDefault();
+
+                    action_guard();
+                    let comment_body = $("#comment-form textarea").val().trim();  //获得评论内容
+                    let parent_comment = $("#comment-form input[name=parent_comment]").val().trim();
+                    console.log(parent_comment);
+                    if (comment_body.length < 5) {
+                        alert("客官，五字起评，不议价。");
+                    } else {
+                        //post
+                        console.log(getCsrf());
+                        $.post("{% url 'forum:comment_create' %}",
+                            {
+                                'parent_comment': parent_comment,
+                                'post': "{{ post.id }}",
+                                'body': comment_body,
+                                'csrfmiddlewaretoken': getCsrf()
+                            },  // end post args
+                            (callback) => {
+                                if (callback == 'OK') {
+                                    {#console.log("post comment success!");#}
+
+                                    {#alert('评论成功！');#}
+                                    {#$(".comment-form-box textarea").val('');  //获得评论内容#}
+                                    getComments();
+                                }
+                            }
+                        );  // end post
+                    }
+                });
+            });
+        };  //end submit comment button c
 
         function add_comment_bar() {
             console.log("go into add_comment_bar function...");
@@ -80,6 +119,7 @@
             // });  //end add comment_bar
             $(".comment-bar a").each(function () {
                 $(this).click(function () {
+                    action_guard();
                     if ($(this).attr('comment-type') == '2') {  //点赞
 
                         // user likes
@@ -109,22 +149,26 @@
                         );
 
                     } else {  //评论
+                        if ($("#comment-form").length > 0) {
+                            $("#comment-form").remove();
+                        }
                         let parent_comment_id = $(this).data('id');
                         console.log($(this));
                         console.log($(this).data('id'));
-                        var input_html = `<form style="margin-bottom: 10px" method="post" action="/comment/add/">
+                        var input_html = `<div id='comment-form' style="margin-bottom: 10px">
 
                     <input type="hidden" name="parent_comment" value=${parent_comment_id}>
                     <input type="hidden" name="post" value={{ post.id }}>
                     <input type="hidden" name="csrfmiddlewaretoken" value=${getCsrf()}>
                     <textarea class="form-control" name="body" rows="3"></textarea>
                     <a class="btn btn-default"><i class="fa fa-angle-double-up fa-fw" aria-hidden="true"></i>收起</a>
-                    <button type="submit" class="btn btn-default pull-right">评论</button>
-                    </form>`;
+                    <button class="btn btn-default pull-right">评论</button>
+                    </div>`;
                         $(this).parent().parent().siblings('p').after(input_html);
                         $(".fa-angle-double-up").parent().click(function () {  //给收起按钮绑定事件
                             $(this).parent().remove();
                         })
+                        ff();
                     }
 
                 });  //end click function
@@ -146,9 +190,23 @@
             return $("input[name='csrfmiddlewaretoken']").val();
         }
 
+        function is_authenticated() {
+            console.log('fdsa')
+            return $("input[name='authenticated']").val() == "True";
+        }
+
+        function action_guard() {
+            if (!is_authenticated()) {
+                alert('请先登录');
+                window.location.href = `/login/?next=${window.location.pathname}`;
+                return;
+            }
+        }
+
         $(document).ready(function () {
             $(".comment-form-box button").click(function (e) {  // 给发表评论的按钮绑定事件
                 e.preventDefault();
+                action_guard();
                 var comment_body = $(".comment-form-box textarea").val().trim();  //获得评论内容
                 if (comment_body.length < 5) {
                     alert("客官，五字起评，不议价。");
@@ -173,9 +231,12 @@
                     );  // end post
                 }
             });  //end submit comment button click
+
+
             $(".post-like").click(function (e) {
                 console.log(e);
                 e.preventDefault();
+                action_guard();
                 $.post('{% url "forum:post_like" %}',
                     {
                         'id': $(this).data('id'),

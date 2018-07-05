@@ -138,7 +138,7 @@ class UserProfile(BaseModel):
 
     def get_upload_path(self, filename):
         ext = os.path.splitext(filename)[1]
-        return 'images/avatars/{}/{}.{}'.format(self.id, uuid.uuid4(), ext)
+        return 'images/avatars/{}/{}{}'.format(self.id, uuid.uuid4(), ext)
 
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='profile')
