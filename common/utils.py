@@ -48,14 +48,23 @@ def render_comments_dict(comments, current_user):
             </a>
         </div>
         <div class="media-body">
-            <h4 class="media-heading" data-id="{1}" data-action="{6}" data-likes="{7}">{3}<small class="margin-left-twenty">{4}</small></h4>
+            <h4 class="media-heading">{3}<small class="margin-left-twenty">{4}</small>
+            <small class='comment-bar pull-right'>
+            <a style='cursor: pointer' data-id="{1}" data-action="{6}"  class='margin-left-twenty' comment-type='2'>
+            <i {8} class='fa fa-thumbs-o-up fa-fw'></i>
+            {7}</a>
+            <a style='cursor: pointer' data-id="{1}" class='margin-left-twenty' comment-type='1'>回复</a>
+            </small>
+            </h4>
             <p>{5}</p>\
     """
     for comment in comments:
+        current_user_liked = current_user in comment.users_like.all()
         elem = template.format(comment.user.id, comment.id,
                                comment.user.profile.avatar.url,
                                comment.user.profile.name, pretty_date(comment.created), comment.body,
-                               'unlike' if current_user in comment.users_like.all() else 'like', comment.total_likes)
+                               'unlike' if current_user_liked else 'like', comment.total_likes,
+                               'style="color: red"' if current_user_liked else '')
         elem += render_comments_dict(comments[comment], current_user)
         elem += "</div></div>"
         rv += elem

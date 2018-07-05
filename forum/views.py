@@ -99,14 +99,12 @@ def post_like(request):
     if post_id and action:
         try:
             post = Post.published.get(id=post_id)
-            # print(post)
-            # print(post.users_like)
-            # print(request.user.posts_liked)
             if action == 'like':
                 post.users_like.add(request.user)
             elif action == 'unlike':
                 post.users_like.remove(request.user)
             post.total_likes = post.users_like.count()
+            post.save()
             return JsonResponse({'status': 'ok'})
         except:
             pass
@@ -128,6 +126,8 @@ def comment_like(request):
             elif action == 'unlike':
                 comment.users_like.remove(request.user)
             comment.total_likes = comment.users_like.count()
+            comment.save()
+            # print(comment.total_likes, comment.users_like.all())
             return JsonResponse({'status': 'ok'})
         except:
             pass

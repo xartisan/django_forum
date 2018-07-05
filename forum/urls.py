@@ -15,6 +15,6 @@ urlpatterns = [
         CommentListView.as_view(),
         name='comment_list'),
     path('comment/add/', CommentCreateView.as_view(), name='comment_create'),
-    path('post/like', post_like, name='post_like'),
-    path('comment/like', comment_like, name='comment_like'),
+    path('post/like/', post_like, name='post_like'),
+    path('comment/like/', comment_like, name='comment_like'),
 ]
