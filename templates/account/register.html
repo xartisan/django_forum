@@ -1,0 +1,14 @@
+{% extends "account/base.html" %}
+{% load crispy_forms_tags %}
+{% block login_signup_form %}
+    <div class="col-sm-12">
+        <h1>注册</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form | crispy }}
+            <button type="submit" class="btn btn-primary">
+                注册
+            </button>
+        </form>
+    </div>
+{% endblock %}

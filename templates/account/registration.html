@@ -1,4 +1,4 @@
-{% extends 'common/master/login_signup_master.html' %}
+{% extends 'account/base.html' %}
 {% load error_msg %}
 {% block title %}
     注册
@@ -6,33 +6,33 @@
 
 {% block login_signup_form %}
     <form class="form-signin" id="input-form" action="" method="post">
-    {% csrf_token %}
+        {% csrf_token %}
         <h2 class="form-signin-heading">欢迎注册</h2>
         <div class="input-group">
             <span class="input-group-addon"><i class="fa fa-user fa-fw" aria-hidden="true"></i></span>
-            <label for="{{ signup_form_obj.username.auto_id }}" class="sr-only"></label>
-            {{ signup_form_obj.username }}
+            <label for="{{ form.username.auto_id }}" class="sr-only"></label>
+            {{ form.username }}
         </div>
-        {% for error in signup_form_obj.username.errors %}
+        {% for error in form.username.errors %}
             <div class="my-alert alert-danger" role="alert">{{ error }}</div>
         {% endfor %}
         <div class="input-group">
             <span class="input-group-addon"><i class="fa fa-key fa-fw" aria-hidden="true"></i></span>
-            <label for="{{ signup_form_obj.password.auto_id }}" class="sr-only"></label>
-            {{ signup_form_obj.password }}
+            <label for="{{ form.password.auto_id }}" class="sr-only"></label>
+            {{ form.password }}
         </div>
-        {% for error in signup_form_obj.password.errors %}
+        {% for error in form.password.errors %}
             <div class="my-alert alert-danger" role="alert">{{ error }}</div>
         {% endfor %}
         <div class="input-group">
             <span class="input-group-addon"><i class="fa fa-repeat fa-fw" aria-hidden="true"></i></span>
-            <label for="{{ signup_form_obj.repeat_password.auto_id }}" class="sr-only"></label>
-            {{ signup_form_obj.repeat_password }}
+            <label for="{{ form.password2.auto_id }}" class="sr-only"></label>
+            {{ form.password2 }}
         </div>
-        {% for error in signup_form_obj.repeat_password.errors %}
+        {% for error in form.password2.errors %}
             <div class="my-alert alert-danger" role="alert">{{ error }}</div>
         {% endfor %}
-        <button class="btn btn-lg btn-primary btn-block my-button" type="submit">注册</button>
+        <button class="btn btn-lg btn-primary my-button" type="submit">注册</button>
         <span class="error_msg">{{ status }}</span>
         <div class="checkbox clearfix">
             <a href="/login/" class="a pull-left">已有账号？>></a>

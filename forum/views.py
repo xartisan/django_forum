@@ -127,7 +127,6 @@ def comment_like(request):
                 comment.users_like.remove(request.user)
             comment.total_likes = comment.users_like.count()
             comment.save()
-            # print(comment.total_likes, comment.users_like.all())
             return JsonResponse({'status': 'ok'})
         except:
             pass

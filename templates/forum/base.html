@@ -86,14 +86,15 @@
                     {#                {% endif %}#}
                 </ul>
             {% endblock %}
-            {#              <ul class="nav navbar-nav navbar-right">#}
-            {#                {% if request.user.is_authenticated %}#}
-            {#                    <li class=""><a href="#">{{ request.user.profile.name }}</a></li>#}
-            {#                    <li class=""><a href="{% url 'logout' %}">注销</a></li>#}
-            {#                {% else %}#}
-            {#                    <li class=""><a href="{% url 'login' %}">登录/注册</a></li>#}
-            {#                {% endif  %}#}
-            {#              </ul>#}
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.user.is_authenticated %}
+                    <li class=""><a href="#">{{ request.user.profile.name }}</a></li>
+                    <li class=""><a href="{% url 'logout' %}">注销</a></li>
+                {% else %}
+                    <li class=""><a href="{% url 'login' %}">登录</a></li>
+                    <li class=""><a href="{% url 'register' %}">注册</a></li>
+                {% endif %}
+            </ul>
         </div><!-- /.nav-collapse -->
 
     </div><!-- /.container -->

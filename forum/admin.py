@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Post, Comment, Topic, UserProfile
+from .models import Post, Comment, Topic
 
 
 @admin.register(Post)
@@ -16,6 +16,3 @@ class CommentAdmin(admin.ModelAdmin):
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
     list_display = ('name', 'is_top_menu', 'position')
-
-
-admin.site.register(UserProfile)

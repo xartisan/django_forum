@@ -11,7 +11,7 @@
             {{ post.title }}
         </h1>
         <div class="article-author">
-            <span>作者:{{ post.author.name }}</span>
+            <span>作者:{{ post.author.profile.name }}</span>
             <span>{{ post.publish | pretty_date }}</span>
             <span>
                 <span class="fa fa-comment-o" aria-hidden="true"></span>
@@ -197,9 +197,8 @@
 
         function action_guard() {
             if (!is_authenticated()) {
-                alert('请先登录');
+                {#alert('请先登录');#}
                 window.location.href = `/login/?next=${window.location.pathname}`;
-                return;
             }
         }
 
