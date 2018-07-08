@@ -1,4 +1,4 @@
-{% extends "bbs/master/base.html" %}
+{% extends "forum/base.html" %}
 
 {% block extend-css %}
     <link href="/static/styles/webchat/webchat.css" rel="stylesheet">
@@ -9,7 +9,7 @@
         <!-- start left panel-->
         <div class="chat-panel col-md-3">
             <div class="panel-header">
-                <h3 class="panel-title">{{ request.user.userprofile.name }}</h3>
+                <h3 class="panel-title">{{ request.user.profile.name }}</h3>
             </div>
             <div class="search-bar input-group">
                 <span class="input-group-addon"><i class="fa fa-search fa-fw"></i></span>
@@ -34,10 +34,10 @@
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="friend-tab">
                         <ul class="list-group">
-                        {% for friend in request.user.userprofile.friends.select_related %}
+                        {% for friend in request.user.profile.friends.select_related %}
                             <li contact-type="single" contact-id="{{ friend.id }}" class="list-group-item" onclick="OpenChatWindow(this)">
                             <i class='fa fa-circle offline'></i>
-                            <img class="hd-img" src="{{ friend.get_head_img }}">
+                            <img class="hd-img" src="{{ friend.avatar.url }}">
                                 <span class="badge my-badge hide">0</span>
                                 <span class="contact-name">{{ friend.name }}</span>
                             </li>
@@ -46,7 +46,7 @@
                     </div>
                     <div role="tabpanel" class="tab-pane" id="group-tab">
                         <ul class="list-group">
-                            {% for group in request.user.userprofile.group_members.select_related %}
+                            {% for group in request.user.profile.belonged_groups.select_related %}
                             <li contact-type="group" contact-id="{{ group.id }}" class="list-group-item" onclick="OpenChatWindow(this)">
 {#                            <img class="hd-img" src="{{ group.get_head_img }}">#}
                                 <span class="badge my-badge hide">0</span>
@@ -108,7 +108,7 @@
                         <textarea id="msg"></textarea>
                     </div>
                     <div class="content">
-                        <button id="send msg" class="btn btn-default pull-right">发送消息</button>
+                        <button id="send-msg" class="btn btn-default pull-right">发送消息</button>
                     </div>
                 </div>
             </div>
@@ -179,7 +179,7 @@
             if (res== 'success') {
                 console.log("update success");
             }
-        }, 300000);  //300秒
+        }, 30000);  //300秒
 
     });  // end document ready
     // start function SendMSG
@@ -191,14 +191,14 @@
         if (contact_type && contact_id) {
             console.log(contact_id, contact_type);
             var msg_obj = {
-                "from": "{{ request.user.userprofile.id }}",
+                "from": "{{ request.user.profile.id }}",
                 "to": contact_id,
                 "type": contact_type,
                 "msg": msg_text
             };
             console.log(msg_obj);
             $.post(
-                "{% url "webchat:send_msg" %}",
+                "{% url "chatroom:send_msg" %}",
                 {data: JSON.stringify(msg_obj)},
                 function (callback) {
                     console.log(callback);
@@ -212,10 +212,10 @@
     function AddSendMSGIntoBox(msg_text) {
         var new_msg_ele = "<div class='clearfix'>" +
             "<div class='msg-me'>" +
-                "<img class='hd-img' src='{{ request.user.userprofile.get_head_img }}'>" +
+                "<img class='hd-img' src='{{ request.user.profile.avatar.url }}'>" +
                 "<div class='msg-wrapper'>" +
                     "<div class='msg-item'>" +
-                        "<span>" + "{{ request.user.userprofile.name }}" + "</span>" +
+                        "<span>" + "{{ request.user.profile.name }}" + "</span>" +
                         "<span class='margin-left-five'>"  + new Date().toLocaleTimeString() +"</span>" +
                         "<div class='msg-text'>" + msg_text +"</div>" +
                     "</div>" +
@@ -236,7 +236,7 @@
             var the_list_ele = $("li[contact-type='" + msg_obj.type + "'][contact-id='" + msg_obj.from + "']")[0];
             var new_msg_ele = "<div class='clearfix'>"+
                 "<div class='msg-you'>" +
-                    "<img class='hd-img' src='" + msg_obj.hd_img + "'>" +
+                    "<img class='hd-img' src='" + msg_obj.avatar + "'>" +
                     "<div class='msg-wrapper'>" +
                         "<div class='msg-item'>" +
                             "<span>" + msg_obj.nickname + "</span>" +
@@ -318,12 +318,12 @@
     // start function GetNewMsgs
     function GetNewMsgs() {
         console.log("getting new msgs...");
-        $.getJSON("{% url 'webchat:get_new_msgs' %}", function(callback) {
+        $.getJSON("{% url 'chatroom:get_new_msgs' %}", function(callback) {
             console.log(callback);
             AddGetMSGIntoBox(callback); //加载后台传来的消息数据
             GetFriendStatus();  //获取好友在线状态
             GetTotalMSGNum();  //计算未读消息总数
-            GetNewMsgs();  //继续获取新消息
+            {#GetNewMsgs();  //继续获取新消息#}
         });  // end getJSON
     }  // end function GetNewMsgs
 
@@ -365,12 +365,12 @@
     function GetFriendStatus() {
         console.log("getting my friends online-status...");
         $.getJSON(
-                "{% url 'webchat:check_my_friends_status' %}",
+                "{% url 'chatroom:check_my_friends_status' %}",
                 function(callback){
                     console.log(callback);
 
                     $("#friend-tab").find("li").each(function() {  //遍历我的好友列表
-                        var current_id = parseInt($(this).attr("contact-id"));  //这里一定要转成int类型！！！
+                        var current_id = $(this).attr("contact-id");  //这里一定要转成int类型！！！
                         var status_ele = $(this).children("i");
                         console.log(callback.includes(current_id));
                         if (callback.includes(current_id)) {  //如果好友的id在后台传过来的在线数组里
@@ -397,7 +397,7 @@
         console.log(formData);
 
         $.ajax({
-            url: '{% url "webchat:upload_file" %}',
+            url: '{% url "chatroom:upload_file" %}',
             type: 'POST',
             data: formData,
             async: false,
