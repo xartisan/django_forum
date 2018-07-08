@@ -1,3 +1,4 @@
+{% load post_tags %}
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -71,18 +72,19 @@
         <div id="navbar" class="collapse navbar-collapse">
             {% block top-menu %}
                 <ul class="nav navbar-nav">
-                    {% for t in topics %}
+                    {% menu_topics as menu_topics %}
+                    {% for t in menu_topics %}
                         {% if t.id == topic_obj.id %}
                             <li class="active"><a href="{% url 'forum:topic_posts' t.id %}">{{ t.name }}</a></li>
                         {% else %}
                             <li class=""><a href="{% url 'forum:topic_posts' t.id %}">{{ t.name }}</a></li>
                         {% endif %}
                     {% endfor %}
-                    {% url "webchat:chat_dashboard" as chat_url %}
+                    {% url "chatroom:dashboard" as chat_url %}
                     {% if request.path == chat_url %}
-                        <li class="active"><a href="/chatroom/">撩妹战区</a></li>
+                        <li class="active"><a href="{{ chat_url }}">微聊</a></li>
                     {% else %}
-                        <li class=""><a href="/chatroom/">撩妹战区</a></li>
+                        <li class=""><a href="{{ chat_url }}">微聊</a></li>
                     {% endif %}
                 </ul>
             {% endblock %}
