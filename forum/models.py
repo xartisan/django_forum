@@ -49,7 +49,7 @@ class Post(BaseModel):
     publish = models.DateTimeField(default=timezone.now)
     post_image = models.ImageField('文章图片', upload_to=get_upload_path)
     status = models.CharField(
-        max_length=10, choices=STATUS_CHOICES, default='draft')
+        max_length=10, choices=STATUS_CHOICES, default='published')
     total_likes = models.PositiveIntegerField(db_index=True, default=0)
     users_like = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name='posts_liked', blank=True)
