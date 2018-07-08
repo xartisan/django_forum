@@ -78,12 +78,12 @@
                             <li class=""><a href="{% url 'forum:topic_posts' t.id %}">{{ t.name }}</a></li>
                         {% endif %}
                     {% endfor %}
-                    {#                {% url "webchat:chat_dashboard" as chat_url %}#}
-                    {#                {% if request.path == chat_url %}#}
-                    {#                    <li class="active"><a href="/webchat/">撩妹战区</a></li>#}
-                    {#                {% else %}#}
-                    {#                    <li class=""><a href="/webchat/">撩妹战区</a></li>#}
-                    {#                {% endif %}#}
+                    {% url "webchat:chat_dashboard" as chat_url %}
+                    {% if request.path == chat_url %}
+                        <li class="active"><a href="/chatroom/">撩妹战区</a></li>
+                    {% else %}
+                        <li class=""><a href="/chatroom/">撩妹战区</a></li>
+                    {% endif %}
                 </ul>
             {% endblock %}
             <ul class="nav navbar-nav navbar-right">
