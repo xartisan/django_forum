@@ -3,9 +3,15 @@ from django.db.models import Count
 from django.utils import timezone
 from taggit.models import Tag
 
+from forum.models import Topic
 from ..models import Post
 
 register = template.Library()
+
+
+@register.simple_tag
+def menu_topics():
+    return Topic.menu_topics.all()
 
 
 @register.simple_tag
