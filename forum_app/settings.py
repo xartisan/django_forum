@@ -137,4 +137,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'forum:post_list'
-# LOGOUT_REDIRECT_URL = 'user:login'
+LOGOUT_REDIRECT_URL = 'login'
+
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 0
