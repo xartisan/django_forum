@@ -19,12 +19,14 @@ from django.contrib import admin
 from django.urls import path, include
 
 import account.urls
+import chatroom.urls
 import forum.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(forum.urls, namespace='forum')),
     path('', include(account.urls)),
+    path('chatroom/', include(chatroom.urls, namespace='chatroom')),
 ]
 
 if settings.DEBUG:
